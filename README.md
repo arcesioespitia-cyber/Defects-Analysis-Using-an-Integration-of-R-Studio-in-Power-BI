@@ -9,3 +9,4 @@ This repository contains all data, code, and reproducibility artifacts from the 
 - `R/`: Complete R scripts used in the study (p-charts, OC curves, Gage R&R, capability indices, mixed models).
 - `powerbi/`: ETL scripts and configuration setup for Power BI R visuals.
 - `manuscript/`: Revised manuscript and reviewer response.
+
