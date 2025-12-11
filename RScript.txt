@@ -1,0 +1,81 @@
+###############################################
+# P-CHART FOR DEFECT PROPORTIONS
+# Requires: qcc package
+###############################################
+
+library(qcc)
+
+# Load dataset
+# Columns required: Defects, Size
+# Example: dataset <- read.csv("caps_data.csv")
+
+# Build p-chart
+p_chart <- qcc(
+  data = dataset$Defects,
+  sizes = dataset$Size,
+  type = "p",
+  plot = TRUE
+)
+
+print(p_chart)
+
+# Export control limits if needed
+write.csv(data.frame(
+  LCL = p_chart$limits[,1],
+  UCL = p_chart$limits[,2],
+  Center = p_chart$center
+), "pchart_limits.csv")
+
+###############################################
+# OPERATING CHARACTERISTIC (OC) CURVE
+###############################################
+
+library(qcc)
+
+# For constant sample size
+sample_size <- 35
+
+oc_q <- qcc(
+  data = dataset$Defects,
+  size = sample_size,
+  type = "p",
+  plot = FALSE
+)
+
+oc.curves(oc_q)
+
+# Optional: save the curve
+png("oc_curve.png", width=1200, height=800)
+oc.curves(oc_q)
+dev.off()
+
+###############################################
+# PROCESS CAPABILITY ANALYSIS FOR ATTRIBUTE DATA
+###############################################
+
+library(qcc)
+
+p_obj <- qcc(dataset$Defects, sizes = dataset$Size, type = "p")
+
+capability_results <- process.capability(p_obj)
+
+print(capability_results)
+
+# Save results
+capture.output(capability_results, file="capability_results.txt")
+
+###############################################
+# DESCRIPTIVE VISUALIZATIONS
+###############################################
+
+library(ggplot2)
+
+# Histogram of defect proportions
+ggplot(dataset, aes(x = Defects / Size)) +
+  geom_histogram(bins = 15) +
+  labs(title = "Distribution of Defect Proportions", x = "Defect %")
+
+# Boxplot by operator
+ggplot(dataset, aes(x = Operator, y = Defects / Size)) +
+  geom_boxplot() +
+  labs(title = "Defect Proportion by Operator")
