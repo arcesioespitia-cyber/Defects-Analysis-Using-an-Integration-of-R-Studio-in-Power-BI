@@ -1,0 +1,9 @@
+let
+    Source = Excel.Workbook(File.Contents("C:\Users\Asus\Documents\Universidad\2025-1\Normalización\Caso_Final.xlsx"), null, true),
+    #"New data_Sheet" = Source{[Item="New data",Kind="Sheet"]}[Data],
+    #"Promoted Headers" = Table.PromoteHeaders(#"New data_Sheet", [PromoteAllScalars=true]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Stage", type text}, {"Worker", type text}, {"Batch", Int64.Type}, {"Batch Stage", Int64.Type}, {"Size (ni)", Int64.Type}, {"Defects (di)", Int64.Type}}),
+    #"Added Custom" = Table.AddColumn(#"Changed Type", "Defect %", each [#"Defects (di)"] / [#"Size (ni)"]),
+    #"Data to load" = Table.TransformColumnTypes(#"Added Custom",{{"Defect %", type number}})
+in
+    #"Data to load"
